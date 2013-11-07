@@ -1,0 +1,26 @@
+; main class config
+[main]
+class 			= "EVECentral"
+host 			= "http://api.eve-central.com/api/"
+suffix 			= ""
+parserClass		= "SimpleXMLElement"
+requestError 	= "throwException"
+cacheTime 		= 3600
+
+; cache config
+; if class name is missing, Dummy is used as default
+[cache]
+class		= "MySQL"
+host		= "localhost"
+user		= "user"
+password	= "pass"
+database	= "database"
+table		= "apicache"
+maxDataSize	= null
+
+; request config
+; if class name is missing, Curl is used as default
+[request]
+class			= "Curl"
+timeout 		= 30
+flattenParams 	= true

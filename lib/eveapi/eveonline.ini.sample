@@ -1,0 +1,27 @@
+; main class config
+[main]
+class 			= "EVEOnline"
+host 			= "http://api.eve-online.com/"
+suffix 			= ".xml.aspx"
+parserClass		= "AleParserXMLElement"
+requestError 	= "throwException"
+serverError 	= "throwException"
+cacheUpdateError= "103, 115, 116, 117, 119"
+
+; cache config
+; if class name is missing, Dummy is used as default
+[cache]
+class		= "MySQL"
+host		= "localhost"
+user		= "user"
+password	= "pass"
+database	= "database"
+table		= "apicache"
+maxDataSize	= null
+
+; request config
+; if class name is missing, Curl is used as default
+[request]
+class			= "Curl"
+timeout 		= 30
+flattenParams 	= false

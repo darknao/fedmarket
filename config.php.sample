@@ -1,0 +1,38 @@
+<?php
+/*
+$Id: config.php.sample 8 2010-11-03 20:50:06Z federatis $
+*/
+
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'database');
+define('DB_USER', 'user');
+define('DB_PASS', 'pass');
+define('DB_PREF', 'FedMart');
+
+define('IMG_DIR', 'img/Retribution');
+define('NEW_IMG_DIR', 'img/Retribution');
+define('MAIN_CORP', '592707514');
+define('MAIN_ALLI', '1134020769');
+
+define('OTHER_ALLI', serialize (
+    array (
+
+    )
+));
+
+define('OTHER_CORP', serialize (
+    array (
+
+    )
+));
+
+require_once('lib/constants.php');
+$fpath = '/home/market/www/lib';
+
+ini_set("session.gc_maxlifetime", "18000"); 
+date_default_timezone_set('Europe/Paris');
+set_include_path(get_include_path() . PATH_SEPARATOR . $fpath);
+//ini_set('display_errors', 0);
+error_reporting(E_ALL ^ E_NOTICE);
+
+?>
