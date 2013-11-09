@@ -14,6 +14,10 @@ define('NEW_IMG_DIR', 'img/Retribution');
 define('MAIN_CORP', '592707514');
 define('MAIN_ALLI', '1134020769');
 
+define('API_KEY', '');
+define('API_VCODE', '');
+define('API_CHAR', '');
+
 define('OTHER_ALLI', serialize (
     array (
 
