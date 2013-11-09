@@ -2,7 +2,7 @@
 
 oldtitle = "";
 loader_img = "<img src=\"img/ajax.gif\">";
-IMG_DIR = "img/Retribution";
+IMG_DIR = "img/Odyssey";
 var name;
 var charID;
 var role;

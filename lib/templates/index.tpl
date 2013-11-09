@@ -409,7 +409,7 @@
     </form>
   </div>
     </td>
-    <td align='right'><span class='copyright'>FedMart <b>v.<?= VERSION; ?></b> - <b>Retribution 1.1</b> DB loaded - <?= $this->IGBMode; ?>Astromechanica Federatis &copy; 2013</span>
+    <td align='right'><span class='copyright'>FedMart <b>v.<?= VERSION; ?></b> - <b>Odyssey 1.1</b> DB loaded - <?= $this->IGBMode; ?>Astromechanica Federatis &copy; 2013</span>
     </td>
   </tr>
 </table>

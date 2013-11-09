@@ -16,7 +16,7 @@ class market {
         if (!isset($catID)) {
             $sql = "
             SELECT * FROM invMarketGroups 
-            LEFT JOIN iconIDs USING (iconID) 
+            LEFT JOIN eveIcons USING (iconID) 
             WHERE invMarketGroups.parentGroupID IS NULL
             AND invMarketGroups.marketGroupID != '2' 
             AND invMarketGroups.marketGroupID != '19'
@@ -37,7 +37,7 @@ class market {
             $catID = $this->db->real_escape_string($catID);
             $sql = "
             SELECT * FROM invMarketGroups 
-            LEFT JOIN iconIDs USING (iconID) 
+            LEFT JOIN eveIcons USING (iconID) 
             WHERE invMarketGroups.parentGroupID = '$catID' 
             AND marketGroupName NOT LIKE '%Faction%'
             ORDER BY invMarketGroups.hasTypes ASC, invMarketGroups.marketGroupName ASC
