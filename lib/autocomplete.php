@@ -21,7 +21,7 @@ if (isset($_GET['q'])) {
   mysql_select_db(DB_NAME,$db)  or die('Erreur de selection '.mysql_error());
   $req = mysql_query($itemSQL) or die('Erreur SQL !<br>'.$itemSQL.'<br>'.mysql_error());
   while ($item = mysql_fetch_object($req)){
-   $ico = IMG_DIR."/Types/".$item->typeID."_32.png";
+    $ico = IMG_DIR."/Types/".$item->typeID."_32.png";
   echo "$item->typeName|$item->typeID|$ico\r\n";
   
   

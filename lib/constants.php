@@ -1,6 +1,6 @@
 <?php
 
-define('VERSION', '0.4.8');
+define('VERSION', '0.4.9');
 define('ICON', IMG_DIR.'/Icons/');
 define('ICON_16', IMG_DIR.'/icons/16_16/');
 define('ICON_32', IMG_DIR.'/icons/32_32/');

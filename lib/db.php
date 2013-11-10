@@ -1,6 +1,7 @@
 <?php
 // $Id: db.php 22 2012-09-26 13:27:40Z nao $
 
+// TODO: Clean that mess
 
 session_start();
 require_once("../config.php");
