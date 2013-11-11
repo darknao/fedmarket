@@ -8,6 +8,8 @@ class eveItem {
     private $icon = null;
     public $tech = null;
     private $prodCost = null;
+    public $isSellable = false;
+    
 
 	public function __construct($item) {
         if(!is_numeric($item)) $item = $this->lookup($item);
@@ -24,10 +26,31 @@ class eveItem {
 
     private function fetch(){
         if (!isset($this->db)) $this->db = new eveDB();
+        $factionGrp = array(
+            '998', // Faction Light Missiles
+            '999', // Faction Rockets
+            '1000', // Faction Torpedoes
+            '1001', // Faction Cruise Missiles
+            '1002', // Faction Heavy Missiles
+            '1003', // Faction Heavy Assault Missiles
+            '1192', // Faction Auto-Targeting
+            '1194', // Faction Citadel Torpedoes
+            '1317', // Faction Citadel Cruise Missiles
+            '1365', // Pirate Faction
+            '1366', // Navy Faction
+            '1370', // Navy Faction
+            '1371', // Pirate Faction
+            '1379', // Navy Faction
+            '1380', // Pirate Faction
+            '1392', // Faction Carrier
+            '1631', // Faction Shuttles
+            '1704' // Navy Faction
+            );
+
         $id = $this->db->real_escape_string($this->ID);
         $sql = "SELECT invTypes.typeID, invTypes.typeName, invTypes.description, eveIcons.iconFile,
         invGroups.categoryID,invBlueprintTypes.blueprintTypeID, invTypes.portionSize, invBlueprintTypes.techLevel,
-        invBlueprintTypes.wasteFactor
+        invBlueprintTypes.wasteFactor, invTypes.marketGroupID
         FROM invTypes 
         LEFT JOIN eveIcons USING (iconID) 
         LEFT JOIN invGroups USING (groupID) 
@@ -39,6 +62,8 @@ class eveItem {
                 $this->oItem->description = str_replace(array("\r\n", "\n", "\r"),"<br />",$this->oItem->description);
                 $this->hasBP = isset($res->BPtypeID);
                 $this->tech = $res->techLevel;
+                if (!in_array($res->marketGroupID, $factionGrp))
+                    $this->isSellable = true;
             }
 
         }

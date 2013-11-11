@@ -78,9 +78,9 @@ class market {
     }
 
     public function loadItem($item){
-        $this->item = new eveItem($item);
+      $this->item = new eveItem($item);
 
-        if (!isset($this->db)) $this->db = new eveDB();
+      if (!isset($this->db)) $this->db = new eveDB();
 
       $batch_size = $this->item->getBatchSize();
       
@@ -90,6 +90,7 @@ class market {
       $icon = "<img src=\"".$this->item->getIcon()."\" style=\"float:left;\" alt='".$this->item->getID()."'>";
       $sicon = "<img src=\"".$this->item->getIcon(32)."\" style=\"float:left;\" alt='".$this->item->getID()."'>";
 
+      if($this->item->isSellable) {
         $cost = $this->item->getProdCost() / $batch_size;
         $costSell = $this->getPrice($itemID);
 
@@ -114,29 +115,29 @@ class market {
 
         if($this->corp != MAIN_CORP) $cost = $costAlli;
                 
-        
-        if($cost > 0 && $costSell>0)$reduc = ( $cost / $costSell - 1 ) * 100;
-        if($reduc < 0)$typeReduc = 'goodreduc';
-        else $typeReduc = 'badreduc';
-        
-        $pcost = number_format($cost, 2, '.', ','). " ISK";         // Your Price
-        $pcostSell = number_format($costSell, 2, '.', ','). " ISK"; // Sinq Laison
-        
-        if($costSell ==0)$pcostSell = "n/a";
-        if($cost == 0)$pcost = "n/a";
-        
-        $aItem = array (
-            'id' => $this->item->getID(),
-            'name' => $this->item->getName(),
-            'desc' => $this->item->getDesc(),
-            'icon' => $icon,
-            'sicon' => $sicon,
-            'cost' => $cost,
-            'costSell' => $costSell,
-            'reduc' => $reduc,
-            'typereduc' => $typeReduc,
-            );
-        return $aItem;
+      }
+      if($cost > 0 && $costSell>0)$reduc = ( $cost / $costSell - 1 ) * 100;
+      if($reduc < 0)$typeReduc = 'goodreduc';
+      else $typeReduc = 'badreduc';
+      
+      $pcost = number_format($cost, 2, '.', ','). " ISK";         // Your Price
+      $pcostSell = number_format($costSell, 2, '.', ','). " ISK"; // Sinq Laison
+      
+      if($costSell ==0)$pcostSell = "n/a";
+      if($cost == 0)$pcost = "n/a";
+      
+      $aItem = array (
+          'id' => $this->item->getID(),
+          'name' => $this->item->getName(),
+          'desc' => $this->item->getDesc(),
+          'icon' => $icon,
+          'sicon' => $sicon,
+          'cost' => $cost,
+          'costSell' => $costSell,
+          'reduc' => $reduc,
+          'typereduc' => $typeReduc,
+          );
+      return $aItem;
         
     }
 
