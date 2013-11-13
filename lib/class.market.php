@@ -115,7 +115,7 @@ class market {
 
         if($this->corp != MAIN_CORP) $cost = $costAlli;
                 
-      }
+        }
       if($cost > 0 && $costSell>0)$reduc = ( $cost / $costSell - 1 ) * 100;
       if($reduc < 0)$typeReduc = 'goodreduc';
       else $typeReduc = 'badreduc';

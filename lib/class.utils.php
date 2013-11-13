@@ -199,6 +199,9 @@ class utils {
         }
     }
 
+    public static function sISK($price) {
+        return number_format($price, 2, '.', ','). " ISK";
+    }
 }
 
 ?>

@@ -9,14 +9,13 @@ class eveItem {
     public $tech = null;
     private $prodCost = null;
     public $isSellable = false;
-    
 
-	public function __construct($item) {
+    public function __construct($item, $dontfetch = false) {
         if(!is_numeric($item)) $item = $this->lookup($item);
         $this->ID = $item;
-        $this->fetch();
+        if (!$dontfetch) $this->fetch();
 
-	}
+    }
     
     public function setItemID($item) {
         $this->ID = $item;
@@ -131,6 +130,8 @@ class eveItem {
             GROUP BY t.typeID,sell.region_id)
 
             ";
+
+
             if($result = $this->db->query($sql)) {
                 $cost=0;
                //echo $sql;
@@ -144,6 +145,81 @@ class eveItem {
             }
         }
         return $this->prodCost;
+    }
+
+    public function getDetailledProdCost($recursion = 0){
+        if (!isset($this->db)) $this->db = new eveDB();
+        $recursion++;
+
+        $totalPrice = 0;
+
+        $strRec = str_repeat(" ", $recursion);
+        $extraMat = $this->db->stmt_init();
+        $extraMat = $this->db->prepare("SELECT typeid,name,greatest(0,sum(quantity)) quantity from (
+              select invTypes.typeid typeid,invTypes.typeName name,quantity
+              from invTypes,invTypeMaterials
+              where invTypeMaterials.materialTypeID=invTypes.typeID
+               and invTypeMaterials.TypeID=?
+              union
+              select invTypes.typeid typeid,invTypes.typeName name,
+                     invTypeMaterials.quantity*r.quantity*-1 quantity
+              from invTypes,invTypeMaterials,ramTypeRequirements r,invBlueprintTypes bt
+              where invTypeMaterials.materialTypeID=invTypes.typeID
+               and invTypeMaterials.TypeID =r.requiredTypeID
+               and r.typeID = bt.blueprintTypeID
+               and r.activityID = 1 and bt.productTypeID=? and r.recycle=1
+            ) t group by typeid,name");
+
+        $extraMat->bind_param('ii', $this->ID, $this->ID);
+
+        $wasteMat = $this->db->prepare("SELECT t.typeName name, r.quantity quantity, r.damagePerJob dmg,t.typeID typeid
+            FROM ramTypeRequirements r,invTypes t,invBlueprintTypes bt,invGroups g
+            where r.requiredTypeID = t.typeID and r.typeID = bt.blueprintTypeID
+            and r.activityID = 1 and bt.productTypeID=? and g.categoryID != 16
+            and t.groupID = g.groupID");
+
+        $wasteMat->bind_param('i', $this->ID);
+
+        $extraMat->execute();
+        $result = $extraMat->get_result();
+        $hasRaw = $hasExtr = true;
+
+        if($result->num_rows > 0){
+            //printf("%s material list for %s:\r\n", $strRec, $this->oItem->typeName);
+            while($res = $result->fetch_object()){
+                printf("%s - %d x %s\r\n", $strRec, $res->quantity, $res->name);
+                $interItem = new eveItem($res->typeid);
+                $interPrice = $interItem->getDetailledProdCost($recursion) * $res->quantity;
+                $totalPrice += $interPrice;
+                printf("%s SubTotal %s\r\n", $strRec, utils::sISK($interPrice));
+            }
+        } else {
+            $hasRaw = false;
+
+        }
+        
+        $wasteMat->execute();
+        $result = $wasteMat->get_result();
+        if($result->num_rows > 0){
+            //printf("%s material list for %s:\r\n", $strRec, $this->oItem->typeName);
+            while($res = $result->fetch_object()){
+                printf("%s - %d x %s\r\n", $strRec, $res->quantity, $res->name);
+                $interItem = new eveItem($res->typeid);
+                $interPrice = $interItem->getDetailledProdCost($recursion) * $res->quantity;
+                $totalPrice += $interPrice;
+                printf("%s SubTotal %s\r\n", $strRec, utils::sISK($interPrice));
+            }
+        } else {
+            $hasExtr = false;
+        }
+
+        if (!$hasRaw && !$hasExtr) {
+            $itemPrice = $this->getJPrice();
+            printf("%s add %s\r\n", $strRec, utils::sISK($itemPrice));
+            $totalPrice += $itemPrice;
+        }
+
+        return $totalPrice;
     }
 
     public function getJPrice() {
