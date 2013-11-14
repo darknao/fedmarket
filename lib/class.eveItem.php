@@ -168,7 +168,7 @@ class eveItem {
                and invTypeMaterials.TypeID =r.requiredTypeID
                and r.typeID = bt.blueprintTypeID
                and r.activityID = 1 and bt.productTypeID=? and r.recycle=1
-            ) t group by typeid,name");
+            ) t where quantity>0 group by typeid,name");
 
         $rawMat->bind_param('ii', $this->ID, $this->ID);
 
@@ -188,13 +188,15 @@ class eveItem {
         if($result->num_rows > 0){
             //printf("%s material list for %s:\r\n", $strRec, $this->oItem->typeName);
             while($res = $result->fetch_object()){
-	        $waste = (($this->tech > 1 && $recursion==1) ? 50 : 0.1);
-		$qtywithwaste = round((int)$res->quantity * ($waste/100 +1));
-                printf("%s - %d x %s (%.2f%% waste)\r\n", $strRec, $qtywithwaste, $res->name, $waste);
-                $interItem = new eveItem($res->typeid);
-                $interPrice = $interItem->getDetailledProdCost($recursion) * $qtywithwaste;
-                $totalPrice += $interPrice;
-                printf("%s SubTotal %s\r\n", $strRec, utils::sISK($interPrice));
+		//if($res->quantity > 0){
+	          $waste = (($this->tech > 1 && $recursion==1) ? 50 : 0.1);
+		  $qtywithwaste = round((int)$res->quantity * ($waste/100 +1));
+                  //printf("%s - %d x %s (%.2f%% waste)\r\n", $strRec, $qtywithwaste, $res->name, $waste);
+                  $interItem = new eveItem($res->typeid, true);
+                  $interPrice = $interItem->getDetailledProdCost($recursion) * $qtywithwaste;
+                  $totalPrice += $interPrice;
+                  //printf("%s SubTotal %s\r\n", $strRec, utils::sISK($interPrice));
+		//}
             }
         } else {
             $hasRaw = false;
@@ -206,11 +208,13 @@ class eveItem {
         if($result->num_rows > 0){
             //printf("%s material list for %s:\r\n", $strRec, $this->oItem->typeName);
             while($res = $result->fetch_object()){
-                printf("%s - %d x %s\r\n", $strRec, $res->quantity, $res->name);
-                $interItem = new eveItem($res->typeid);
-                $interPrice = $interItem->getDetailledProdCost($recursion) * $res->quantity;
-                $totalPrice += $interPrice;
-                printf("%s SubTotal %s\r\n", $strRec, utils::sISK($interPrice));
+	        //if($res->quantity > 0){
+                  //printf("%s - %d x %s\r\n", $strRec, $res->quantity, $res->name);
+                  $interItem = new eveItem($res->typeid, true);
+                  $interPrice = $interItem->getDetailledProdCost($recursion) * $res->quantity;
+                  $totalPrice += $interPrice;
+                  //printf("%s SubTotal %s\r\n", $strRec, utils::sISK($interPrice));
+		//}
             }
         } else {
             $hasExtr = false;
@@ -231,7 +235,7 @@ class eveItem {
         $sql = "SELECT MIN(price) as price,region_id,date_created
         FROM items_selling
         WHERE region_id = '10000002'
-        AND type_id = '".$this->oItem->typeID."'
+        AND type_id = '".$this->ID."'
         GROUP BY region_id
         ORDER BY region_id;";
 
