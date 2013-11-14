@@ -154,8 +154,8 @@ class eveItem {
         $totalPrice = 0;
 
         $strRec = str_repeat(" ", $recursion);
-        $extraMat = $this->db->stmt_init();
-        $extraMat = $this->db->prepare("SELECT typeid,name,greatest(0,sum(quantity)) quantity from (
+        $rawMat = $this->db->stmt_init();
+        $rawMat = $this->db->prepare("SELECT typeid,name,greatest(0,sum(quantity)) quantity from (
               select invTypes.typeid typeid,invTypes.typeName name,quantity
               from invTypes,invTypeMaterials
               where invTypeMaterials.materialTypeID=invTypes.typeID
@@ -170,26 +170,29 @@ class eveItem {
                and r.activityID = 1 and bt.productTypeID=? and r.recycle=1
             ) t group by typeid,name");
 
-        $extraMat->bind_param('ii', $this->ID, $this->ID);
+        $rawMat->bind_param('ii', $this->ID, $this->ID);
 
-        $wasteMat = $this->db->prepare("SELECT t.typeName name, r.quantity quantity, r.damagePerJob dmg,t.typeID typeid
+        $extraMat = $this->db->prepare("SELECT t.typeName name, r.quantity quantity,
+	    r.damagePerJob dmg,t.typeID typeid
             FROM ramTypeRequirements r,invTypes t,invBlueprintTypes bt,invGroups g
             where r.requiredTypeID = t.typeID and r.typeID = bt.blueprintTypeID
             and r.activityID = 1 and bt.productTypeID=? and g.categoryID != 16
             and t.groupID = g.groupID");
 
-        $wasteMat->bind_param('i', $this->ID);
+        $extraMat->bind_param('i', $this->ID);
 
-        $extraMat->execute();
-        $result = $extraMat->get_result();
+        $rawMat->execute();
+        $result = $rawMat->get_result();
         $hasRaw = $hasExtr = true;
 
         if($result->num_rows > 0){
             //printf("%s material list for %s:\r\n", $strRec, $this->oItem->typeName);
             while($res = $result->fetch_object()){
-                printf("%s - %d x %s\r\n", $strRec, $res->quantity, $res->name);
+	        $waste = (($this->tech > 1 && $recursion==1) ? 50 : 0.1);
+		$qtywithwaste = round((int)$res->quantity * ($waste/100 +1));
+                printf("%s - %d x %s (%.2f%% waste)\r\n", $strRec, $qtywithwaste, $res->name, $waste);
                 $interItem = new eveItem($res->typeid);
-                $interPrice = $interItem->getDetailledProdCost($recursion) * $res->quantity;
+                $interPrice = $interItem->getDetailledProdCost($recursion) * $qtywithwaste;
                 $totalPrice += $interPrice;
                 printf("%s SubTotal %s\r\n", $strRec, utils::sISK($interPrice));
             }
@@ -198,8 +201,8 @@ class eveItem {
 
         }
         
-        $wasteMat->execute();
-        $result = $wasteMat->get_result();
+        $extraMat->execute();
+        $result = $extraMat->get_result();
         if($result->num_rows > 0){
             //printf("%s material list for %s:\r\n", $strRec, $this->oItem->typeName);
             while($res = $result->fetch_object()){
@@ -215,7 +218,7 @@ class eveItem {
 
         if (!$hasRaw && !$hasExtr) {
             $itemPrice = $this->getJPrice();
-            printf("%s add %s\r\n", $strRec, utils::sISK($itemPrice));
+            //printf("%s add %s\r\n", $strRec, utils::sISK($itemPrice));
             $totalPrice += $itemPrice;
         }
 
