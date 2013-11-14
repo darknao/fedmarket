@@ -1,0 +1,3 @@
+fedmarket_web_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: FedmarketWebBundle:Default:index }

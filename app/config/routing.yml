@@ -1,0 +1,4 @@
+fedmarket_web:
+    resource: "@FedmarketWebBundle/Resources/config/routing.yml"
+    prefix:   /
+
