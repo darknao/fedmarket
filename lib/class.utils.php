@@ -30,7 +30,7 @@ class utils {
             $icon[1] = preg_replace('/^0/', '', $icon[1]);
             $iconFileName = $icon[0].'_'.$size.'_'.$icon[1].'.png';
             if(!file_exists(ROOT_PATH. "/" .ICON."items/".$iconFileName))
-                $iconFileName = $icon[0].'_32_'.$icon[1].'.png';
+                $iconFileName = $icon[0].'_64_'.$icon[1].'.png';
         }
         return ICON."items/".$iconFileName;
 

@@ -9,8 +9,7 @@ define('DB_USER', 'user');
 define('DB_PASS', 'pass');
 define('DB_PREF', 'FedMart');
 
-define('IMG_DIR', 'img/Retribution');
-define('NEW_IMG_DIR', 'img/Retribution');
+define('IMG_DIR', 'img/Rubicon');
 define('MAIN_CORP', '592707514');
 define('MAIN_ALLI', '1134020769');
 
